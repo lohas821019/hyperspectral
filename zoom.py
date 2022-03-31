@@ -18,9 +18,9 @@ spectral.settings.envi_support_nonlowercase_params ='TRUE'
 
 #光譜將具有CxB形狀，其中C是庫中的光譜數，B是每個光譜的譜帶數。
 
-os.chdir(r"H:\臺大醫院測試\第12次量測-50x測試\3片的\20220317_120101_500ms_A")
+os.chdir(r"H:\臺大醫院測試\第14次量測\20220331\540標準")
 
-img = envi.open("20220317_120101_500ms_A.hdr", "20220317_120101_500ms_A.dat")
+img = envi.open("540標準.hdr", "540標準.dat")
 
 print(img.__class__)
 print(img)
@@ -47,32 +47,31 @@ plt.figure()
 plt.imshow(arr1[:,:,70])
 
 plt.figure()
-plt.imshow(arr1[:,:,94])
+plt.imshow(arr1[:,:,90])
 
-arr1[:,:,95].mean()
-arr1[:,:,95].max()
-zzz = np.where(arr1[:,:,95] >= arr1[:,:,95].mean())
+arr1[:,:,90].mean()
+arr1[:,:,90].max()
 
+#%% 小於mean的都等於0
+zzz= np.where(arr1[:,:,90] <= arr1[:,:,90].mean())
+
+for i in range(len(zzz[0])):
+    arr1[zzz[0][i],zzz[1][i],90] = 0
+
+#%% 數據處理
 zzz1 = np.where(arr1[:,:,95] >= 0.1)
-
-# len(zzz1[0])
 
 for i in range(len(zzz1[0])):
     arr1[zzz1[0][i],zzz1[1][i],95]*1
-    
-# #大於0.8的壞點刪掉
-for i in range(len(zzz[0])):
-    arr1[zzz[0][i],zzz[1][i],95] =0
 
 # zzz1 = np.where(arr1[:,:,95] <= 0.1)
 # for i in range(len(zzz1[0])):
 #     arr1[zzz1[0][i],zzz1[1][i],95] =0
 
-
 arr1[:,:,95] = (arr1[:,:,95]/arr1[:,:,95].max())*200
 
-
-plt.imshow(arr1[:,:,95],cmap ="gray")
+#%%
+plt.imshow(arr1[:,:,90],cmap ="gray")
 
 image = Image.fromarray(np.uint8(cm.plasma(arr1[:,:,94])*255))
 image.show()
@@ -97,16 +96,17 @@ a540 = arr1[:,:,70]
 subplot(1,2,1)
 plt.imshow(a540,cmap ="gray")
 
-a575 = arr1[:,:,87]
+a580 = arr1[:,:,90]
 subplot(1,2,2)
-plt.imshow(a575)
+plt.imshow(a580)
 
 
+plt.figure()
 img1 = np.zeros([608,968, 3], np.uint8)
-a575 = (a575/a575.max())*255
-img1[:,:,0] = a575.astype('uint8')
-# img1[:,:,1] = a575.astype('uint8')
-# img1[:,:,2] = a575.astype('uint8')
+a580 = (a580/a580.max())*255
+# img1[:,:,0] = a580.astype('uint8')
+img1[:,:,1] = a580.astype('uint8')
+# img1[:,:,2] = a580.astype('uint8')
 subplot(2,2,1)
 plt.imshow(img1)
 
@@ -118,7 +118,12 @@ img[:,:,2] = a540.astype('uint8')
 subplot(2,2,2)
 plt.imshow(img)
 
-subplot(2,2,3)
+
+plt.figure()
 plt.imshow(img+ img1)
+
+#%%
+z = np.where(a580 == a580.max())
+
 
 
